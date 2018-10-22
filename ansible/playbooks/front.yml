@@ -1,7 +1,57 @@
+- hosts: devops 
+  vars:
+    - domain_name: 'roza-gal.devops.srwx.net'
+    - letsencrypt_email: 'roza_gal@mail.ru'
 
-- hosts: devops
-  tasks: 
+  tasks:
+ 
+    
     - name: install nginx
       apt: allow_unauthenticated=yes name=nginx state=present
+
+    - name: install letsencrypt
+      apt: name=letsencrypt state=latest
+
+    - name: create letsencrypt directory
+      file: name=/var/www/letsencrypt state=absent
+
+    - name: Create letsencrypt certificate
+      shell: letsencrypt certonly -a --webroot-path=/var/www/html -m {{ letsencrypt_email }} -d {{ domain_name }}
+      args:
+        creates: /etc/letsencrypt/live/{{ domain_name }}
+
     - name: Install git
       apt: name=git state=present 
+
+    - name: Delete default config nginx
+      file: path=/etc/nginx/sites-available/default state=absent
+
+    - name: Add letsencrypt cronjob for cert renewal
+      cron:
+        name: letsencrypt_renewal
+        special_time: daily
+        job: letsencrypt --renew certonly -n --webroot-path=/var/www/html && service nginx reload
+
+    - name: Specific nginx config from template
+      template: src=templates/nginx.roza-gal.devops.srwx.net.conf.j2 dest=/etc/nginx/sites-available/{{ domain_name }} owner=root group=root mode=0644
+
+    - name: Symlink for nginx
+      file: src=/etc/nginx/sites-available/{{ domain_name }}  dest=/etc/nginx/sites-enabled/{{ domain_name }} state=link
+      notify: Restart nginx
+
+
+
+    - name: Create SRV directory and git clone
+      file: path=/srv/goapp-web state=directory  
+
+
+    - name: Git clone 
+      git: repo=git@github.com:gro3a/goapp-web.git dest=/srv/goapp-web       
+      notify: Restart nginx
+
+
+  handlers:
+    - name: Restart nginx
+      service: name=nginx state=reloaded   
+
+

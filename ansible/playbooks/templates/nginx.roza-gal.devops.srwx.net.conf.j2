@@ -1,0 +1,36 @@
+server {
+  listen 80;
+
+  server_name roza-gal.devops.srwx.net;
+  
+  location /.well-known/ {
+    allow all;
+}
+
+  location / {
+    return 301 https://roza-gal.devops.srwx.net$request-uri;
+  }
+
+}
+
+server {
+  listen 443 ssl;
+ 
+  ssl_certificate /etc/letsencrypt/live/roza-gal.devops.srwx.net/fullchain.pem;
+  ssl_sedrtificate_key /etc/letsencrypt/live/roza-gal.devops.srwx.net/privkey.pem;
+
+  location / {
+    root /opt/web
+}
+  
+  location /api/sum/ {
+    proxy_pass http://localhost:8080;
+}
+
+  location /api/diff/ {
+    fastcgi_param SCRIPT_FILENAME /srv/phpapp/diff.php;
+    fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+  }
+}
+
+ 
