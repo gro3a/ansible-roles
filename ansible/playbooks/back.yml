@@ -13,12 +13,7 @@
 
     - name: Copy main.go
       template: src=templates/main.go.j2 dest=/srv/goapp/main.go
-      
-
-    - name:  build goapp
-      shell: go build /srv/goapp/main.go
-      args: 
-        chdir: /srv/goapp/src/
+      notify: Build goapp
 
     - name: Create systemd goapp.service
       template: src=templates/systemd.maingo.service.conf.j2 dest=/etc/systemd/system/goapp.service
@@ -33,5 +28,10 @@
 
     - name: Copy diff.php
       template: src=templates/phpapp.diff.php.j2 dest=/srv/phpapp/diff.php
-
+  
+  handlers:
+    - name:  Build goapp
+      shell: go build /srv/goapp/main.go
+      args:
+        chdir: /srv/goapp/src/
 
