@@ -1,0 +1,13 @@
+<?php
+
+$a = $_GET[a];
+$b = $_GET[b];
+
+$result["Result"] = $a - $b;
+$result["Status"] = "OK";
+
+echo json_encode($result);
+
+?>
+
+

@@ -16,7 +16,7 @@
       file: name=/var/www/letsencrypt state=absent
 
     - name: Create letsencrypt certificate
-      shell: letsencrypt certonly -a --webroot-path=/var/www/html -m {{ letsencrypt_email }} -d {{ domain_name }}
+      shell: letsencrypt certonly -a webroot --webroot-path=/var/www/html -m {{ letsencrypt_email }} -d {{ domain_name }}
       args:
         creates: /etc/letsencrypt/live/{{ domain_name }}
 
@@ -30,10 +30,11 @@
       cron:
         name: letsencrypt_renewal
         special_time: daily
-        job: letsencrypt --renew certonly -n --webroot-path=/var/www/html && service nginx reload
+        job: letsencrypt --renew certonly -a webroot --webroot-path=/var/www/html && service nginx reload
 
     - name: Specific nginx config from template
       template: src=templates/nginx.roza-gal.devops.srwx.net.conf.j2 dest=/etc/nginx/sites-available/{{ domain_name }} owner=root group=root mode=0644
+      notify: Restart nginx
 
     - name: Symlink for nginx
       file: src=/etc/nginx/sites-available/{{ domain_name }}  dest=/etc/nginx/sites-enabled/{{ domain_name }} state=link
