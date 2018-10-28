@@ -1,0 +1,6 @@
+---
+hosts: all
+tasks:
+        - name: Install php fpm
+          apt: name=php-fpm state=present
+

@@ -1,0 +1,4 @@
+---
+vars:
+    - domain_name: 'roza-gal.devops.srwx.net'
+    - letsencrypt_email: 'roza_gal@mail.ru'
