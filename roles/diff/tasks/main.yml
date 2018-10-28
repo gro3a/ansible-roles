@@ -1,6 +1,5 @@
 
 ---
-hosts: all
 tasks:
 
     - name: Create dir for phpapp
