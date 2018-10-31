@@ -1,7 +1,5 @@
 
 ---
-tasks:
-
     - name: Create dir for phpapp
       file: path=/srv/api-diff/ state=directory
 

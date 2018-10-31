@@ -1,6 +1,5 @@
 
 ---
-tasks:
     - name: Install go
        apt: name=golang-go state=present
 

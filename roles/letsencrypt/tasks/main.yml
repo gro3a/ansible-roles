@@ -1,6 +1,5 @@
 
 ---
-tasks:
     - name: install letsencrypt
       apt: name=letsencrypt state=latest
 
